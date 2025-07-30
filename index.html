@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clima en Arana</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      color: #333;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .dato {
+      font-size: 1.2em;
+      margin: 10px 0;
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>🌤 Clima en Arana</h1>
+  <div class="dato" id="temp">🌡 Temperatura: ...</div>
+  <div class="dato" id="hum">💧 Humedad: ...</div>
+  <div class="dato" id="pres">📉 Presión: ...</div>
+  <div class="dato" id="roc">🌫 Punto de rocío: ...</div>
+  <div class="dato" id="hora">🕒 Última actualización: ...</div>
+
+  <script>
+    const channelID = "3020883";
+    const url = `https://api.thingspeak.com/channels/${channelID}/feeds/last.json`;
+
+    async function actualizarDatos() {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      document.getElementById("temp").textContent = `🌡 Temperatura: ${parseFloat(data.field1).toFixed(1)} °C`;
+      document.getElementById("hum").textContent  = `💧 Humedad: ${parseFloat(data.field2).toFixed(1)} %`;
+      document.getElementById("pres").textContent = `📉 Presión: ${parseFloat(data.field3).toFixed(1)} hPa`;
+      document.getElementById("roc").textContent  = `🌫 Punto de rocío: ${parseFloat(data.field4).toFixed(1)} °C`;
+      document.getElementById("hora").textContent = `🕒 Última actualización: ${new Date(data.created_at).toLocaleString()}`;
+    }
+
+    actualizarDatos();
+    setInterval(actualizarDatos, 60000); // Actualiza cada 1 minuto
+  </script>
+</body>
+</html>
