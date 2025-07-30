@@ -33,25 +33,47 @@
   <div class="dato" id="hum">💧 Humedad: ...</div>
   <div class="dato" id="pres">📉 Presión: ...</div>
   <div class="dato" id="roc">🌫 Punto de rocío: ...</div>
+  <div class="dato" id="estado">🌥 Estado: ...</div>
   <div class="dato" id="hora">🕒 Última actualización: ...</div>
 
   <script>
     const channelID = "3020883";
     const url = `https://api.thingspeak.com/channels/${channelID}/feeds/last.json`;
 
-    async function actualizarDatos() {
-      const res = await fetch(url);
-      const data = await res.json();
+    function interpretarEstado(temp, hum, pres, roc) {
+      if (pres < 1000 && hum > 80) return "⛈ Inestable / Posible tormenta";
+      if (temp > 30 && hum > 70) return "🥵 Bochorno";
+      if (temp < 10 && hum > 85 && roc > 5) return "🌫 Niebla / Muy húmedo";
+      if (hum > 85) return "🌧 Muy húmedo / Probable lluvia";
+      if (pres > 1020 && hum < 60 && temp > 18) return "☀ Soleado";
+      if (temp < 5) return "❄ Frío";
+      return "🌤 Parcialmente despejado";
+    }
 
-      document.getElementById("temp").textContent = `🌡 Temperatura: ${parseFloat(data.field1).toFixed(1)} °C`;
-      document.getElementById("hum").textContent  = `💧 Humedad: ${parseFloat(data.field2).toFixed(1)} %`;
-      document.getElementById("pres").textContent = `📉 Presión: ${parseFloat(data.field3).toFixed(1)} hPa`;
-      document.getElementById("roc").textContent  = `🌫 Punto de rocío: ${parseFloat(data.field4).toFixed(1)} °C`;
-      document.getElementById("hora").textContent = `🕒 Última actualización: ${new Date(data.created_at).toLocaleString()}`;
+    async function actualizarDatos() {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const temp = parseFloat(data.field1);
+        const hum  = parseFloat(data.field2);
+        const pres = parseFloat(data.field3);
+        const roc  = parseFloat(data.field4);
+
+        document.getElementById("temp").textContent   = `🌡 Temperatura: ${temp.toFixed(1)} °C`;
+        document.getElementById("hum").textContent    = `💧 Humedad: ${hum.toFixed(1)} %`;
+        document.getElementById("pres").textContent   = `📉 Presión: ${pres.toFixed(1)} hPa`;
+        document.getElementById("roc").textContent    = `🌫 Punto de rocío: ${roc.toFixed(1)} °C`;
+        document.getElementById("estado").textContent = `🌥 Estado: ${interpretarEstado(temp, hum, pres, roc)}`;
+        document.getElementById("hora").textContent   = `🕒 Última actualización: ${new Date(data.created_at).toLocaleString()}`;
+
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      }
     }
 
     actualizarDatos();
-    setInterval(actualizarDatos, 60000); // Actualiza cada 1 minuto
+    setInterval(actualizarDatos, 60000); // actualiza cada 60 segundos
   </script>
 </body>
 </html>
