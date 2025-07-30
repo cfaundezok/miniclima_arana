@@ -1,2 +1,2 @@
 # miniclima_arana
-lima en tiempo real desde estación meteorológica ESP8266.
+Clima en tiempo real desde estación meteorológica casera con ESP8266 desde Arana, La Plata.
