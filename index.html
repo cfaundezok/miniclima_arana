@@ -5,75 +5,181 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Clima en Arana</title>
   <style>
+    :root {
+      --bg-color: #f2f2f2;
+      --text-color: #333;
+      --card-bg: white;
+    }
+    body.noche {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --card-bg: #1e1e1e;
+    }
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      color: #333;
-      max-width: 600px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 700px;
       margin: auto;
       padding: 20px;
     }
     h1 {
       text-align: center;
-      margin-bottom: 10px;
     }
     .dato {
-      font-size: 1.2em;
+      font-size: 1.1em;
       margin: 10px 0;
-      background: white;
+      background: var(--card-bg);
       padding: 10px;
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+    .menu {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .menu button {
+      padding: 8px 16px;
+      font-size: 1em;
+      border: none;
+      border-radius: 6px;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    .menu button:hover {
+      background: #388E3C;
+    }
+    .seccion {
+      display: none;
+    }
+    .seccion.activa {
+      display: block;
+    }
+    .toggle-noche {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+    iframe {
+      width: 100%;
+      border: none;
+      height: 260px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
-  <h1>🌤 Clima en Arana</h1>
-  <div class="dato" id="temp">🌡 Temperatura: ...</div>
-  <div class="dato" id="hum">💧 Humedad: ...</div>
-  <div class="dato" id="pres">📉 Presión: ...</div>
-  <div class="dato" id="roc">🌫 Punto de rocío: ...</div>
-  <div class="dato" id="estado">🌥 Estado: ...</div>
-  <div class="dato" id="hora">🕒 Última actualización: ...</div>
+  <div class="toggle-noche" onclick="document.body.classList.toggle('noche')">🌙</div>
+
+  <div class="container">
+    <h1>🌤 Clima en Arana</h1>
+
+    <div class="menu">
+      <button onclick="mostrarSeccion('principal')">Principal</button>
+      <button onclick="mostrarSeccion('graficos')">Gráficos</button>
+      <button onclick="mostrarSeccion('info')">Información</button>
+    </div>
+
+    <div id="principal" class="seccion activa">
+      <div class="dato" id="estado">Estado: 🌤 - ...</div>
+      <div class="dato" id="temp">🌡 Temperatura: ...</div>
+      <div class="dato" id="hum">💧 Humedad: ...</div>
+      <div class="dato" id="pres">📉 Presión: ...</div>
+      <div class="dato" id="roc">🌫 Punto de rocío: ...</div>
+      <div class="dato" id="sens">🥵 Sensación térmica: ...</div>
+      <div class="dato" id="hora">🕒 Última actualización: ...</div>
+    </div>
+
+    <div id="graficos" class="seccion">
+      <h2>📈 Gráficos históricos</h2>
+      <iframe src="https://thingspeak.com/channels/3020883/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+      <iframe src="https://thingspeak.com/channels/3020883/charts/2?bgcolor=%23ffffff&color=%2300977b&dynamic=true&results=60&type=line&update=15"></iframe>
+      <iframe src="https://thingspeak.com/channels/3020883/charts/3?bgcolor=%23ffffff&color=%232f64ad&dynamic=true&results=60&type=line&update=15"></iframe>
+      <iframe src="https://thingspeak.com/channels/3020883/charts/4?bgcolor=%23ffffff&color=%239b59b6&dynamic=true&results=60&type=line&update=15"></iframe>
+    </div>
+
+    <div id="info" class="seccion">
+      <h2>ℹ️ Información de la estación</h2>
+      <div class="dato">📍 Ubicación: Arana, La Plata, Buenos Aires, Argentina</div>
+      <div class="dato">🔧 Sensores instalados:
+        <ul>
+          <li>🌡 SHT31 (Temperatura y Humedad)</li>
+          <li>🧭 BMP180 (Presión atmosférica)</li>
+        </ul>
+      </div>
+      <div class="dato">👨‍💻 Autor: cfaundezok</div>
+      <div class="dato">🔄 Actualización: cada 10 minutos</div>
+      <div class="dato">📚 Proyecto: Personal, educativo y experimental</div>
+<div style="text-align:center; margin: 15px 0;">
+  <a href="https://t.me/miniclima_arana_bot" target="_blank" rel="noopener" 
+     style="text-decoration:none; color:#0088cc; font-weight:bold; font-size:1.2rem; display:inline-flex; align-items:center; gap:8px;">
+    <svg height="24" viewBox="0 0 240 240" width="24" xmlns="http://www.w3.org/2000/svg" fill="#0088cc">
+      <path d="M120 0C53.7 0 0 53.7 0 120s53.7 120 120 120 120-53.7 120-120S186.3 0 120 0zm57.8 84.3-23.7 111c-1.8 8-6.6 10-13.3 6.3l-36.8-27.2-17.7 17c-1.9 1.9-3.5 3.5-7.2 3.5l2.6-36.8 66.9-60.4c2.9-2.6-.6-4-4.5-1.4l-82.6 52.1-35.5-11c-7.7-2.4-7.8-7.7 1.6-11.4l137-52.8c6.3-2.4 11.8 1.5 9.8 11z"/>
+    </svg>
+    Chat con el Bot Telegram
+  </a>
+</div>
+    </div>
+  </div>
 
   <script>
     const channelID = "3020883";
     const url = `https://api.thingspeak.com/channels/${channelID}/feeds/last.json`;
 
-    function interpretarEstado(temp, hum, pres, roc) {
-      if (pres < 1000 && hum > 80) return "⛈ Inestable / Posible tormenta";
-      if (temp > 30 && hum > 70) return "🥵 Bochorno";
-      if (temp < 10 && hum > 85 && roc > 5) return "🌫 Niebla / Muy húmedo";
-      if (hum > 85) return "🌧 Muy húmedo / Probable lluvia";
-      if (pres > 1020 && hum < 60 && temp > 18) return "☀ Soleado";
-      if (temp < 5) return "❄ Frío";
-      return "🌤 Parcialmente despejado";
+    async function actualizarDatos() {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const T = parseFloat(data.field1);
+      const H = parseFloat(data.field2);
+      const P = parseFloat(data.field3);
+      const R = parseFloat(data.field4);
+
+      document.getElementById("temp").textContent = `🌡 Temperatura: ${T.toFixed(1)} °C`;
+      document.getElementById("hum").textContent  = `💧 Humedad: ${H.toFixed(1)} %`;
+      document.getElementById("pres").textContent = `📉 Presión: ${P.toFixed(1)} hPa`;
+      document.getElementById("roc").textContent  = `🌫 Punto de rocío: ${R.toFixed(1)} °C`;
+      document.getElementById("hora").textContent = `🕒 Última actualización: ${new Date(data.created_at).toLocaleString()}`;
+
+      // Sensación térmica simple (Wind Chill si < 27°C)
+      let sensacion;
+      const viento_kmh = 12; // valor externo estimado
+
+      if (T < 27) {
+        const v = Math.pow(viento_kmh, 0.16);
+        sensacion = 13.12 + 0.6215*T - 11.37*v + 0.3965*T*v;
+      } else {
+        sensacion = T; // si hace calor, igual a T (simplificado)
+      }
+      document.getElementById("sens").textContent = `🥵 Sensación térmica: ${sensacion.toFixed(1)} °C`;
+
+      // Estado aproximado (muy básico)
+      let estado = "🌤 Parcialmente despejado";
+      if (H > 90 && T < 20) estado = "🌧 Posible llovizna";
+      else if (H < 40 && T > 28) estado = "☀️ Soleado";
+      else if (H > 80 && T > 25) estado = "🌦 Calor húmedo";
+
+      document.getElementById("estado").textContent = `Estado: ${estado}`;
     }
 
-    async function actualizarDatos() {
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-
-        const temp = parseFloat(data.field1);
-        const hum  = parseFloat(data.field2);
-        const pres = parseFloat(data.field3);
-        const roc  = parseFloat(data.field4);
-
-        document.getElementById("temp").textContent   = `🌡 Temperatura: ${temp.toFixed(1)} °C`;
-        document.getElementById("hum").textContent    = `💧 Humedad: ${hum.toFixed(1)} %`;
-        document.getElementById("pres").textContent   = `📉 Presión: ${pres.toFixed(1)} hPa`;
-        document.getElementById("roc").textContent    = `🌫 Punto de rocío: ${roc.toFixed(1)} °C`;
-        document.getElementById("estado").textContent = `🌥 Estado: ${interpretarEstado(temp, hum, pres, roc)}`;
-        document.getElementById("hora").textContent   = `🕒 Última actualización: ${new Date(data.created_at).toLocaleString()}`;
-
-      } catch (error) {
-        console.error("Error al obtener datos:", error);
-      }
+    function mostrarSeccion(id) {
+      document.querySelectorAll(".seccion").forEach(sec => sec.classList.remove("activa"));
+      document.getElementById(id).classList.add("activa");
     }
 
     actualizarDatos();
-    setInterval(actualizarDatos, 60000); // actualiza cada 60 segundos
+    setInterval(actualizarDatos, 60000);
   </script>
 </body>
 </html>
