@@ -1,181 +1,187 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clima en Arana</title>
   <style>
-    :root {
-      --bg-color: #f2f2f2;
-      --text-color: #333;
-      --card-bg: white;
-    }
-    body.noche {
-      --bg-color: #121212;
-      --text-color: #e0e0e0;
-      --card-bg: #1e1e1e;
-    }
     body {
-      font-family: Arial, sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
+      font-family: sans-serif;
       margin: 0;
       padding: 0;
+      background-color: #eef2f3;
+      color: #111;
+      transition: background 0.3s, color 0.3s;
     }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
+    .noche {
+      background-color: #121212;
+      color: #eee;
     }
-    h1 {
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 1em;
       text-align: center;
     }
-    .dato {
-      font-size: 1.1em;
-      margin: 10px 0;
-      background: var(--card-bg);
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .menu {
+    nav {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      background-color: #34495e;
     }
-    .menu button {
-      padding: 8px 16px;
-      font-size: 1em;
+    nav button {
+      flex: 1;
+      padding: 1em;
+      background: none;
       border: none;
-      border-radius: 6px;
-      background: #4CAF50;
       color: white;
       cursor: pointer;
     }
-    .menu button:hover {
-      background: #388E3C;
+    nav button:hover {
+      background-color: #2c3e50;
     }
     .seccion {
       display: none;
+      padding: 1em;
     }
     .seccion.activa {
       display: block;
     }
+    .dato {
+      margin: 1em 0;
+      font-size: 1.2em;
+    }
     .toggle-noche {
-      position: fixed;
+      position: absolute;
       top: 10px;
       right: 10px;
-      font-size: 1.5em;
+      padding: 0.5em;
+      font-size: 1em;
       cursor: pointer;
+      background-color: #ccc;
+      border-radius: 0.5em;
     }
-    iframe {
-      width: 100%;
-      border: none;
-      height: 260px;
-      margin-bottom: 10px;
-      border-radius: 8px;
+    .bot {
+      display: inline-block;
+      margin-top: 1em;
+      padding: 0.5em 1em;
+      background-color: #34ace0;
+      color: white;
+      border-radius: 0.5em;
+      text-decoration: none;
+      font-size: 1em;
+    }
+    .bot:hover {
+      background-color: #227093;
+    }
+    @media (max-width: 600px) {
+      nav button {
+        font-size: 0.9em;
+        padding: 0.5em;
+      }
+      .dato {
+        font-size: 1em;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="toggle-noche" onclick="document.body.classList.toggle('noche')">🌙</div>
+  <header>
+    <h1>Clima en Arana</h1>
+    <div class="toggle-noche">🌙</div>
+  </header>
 
-  <div class="container">
-    <h1>🌤 Clima en Arana</h1>
+  <nav>
+    <button onclick="mostrarSeccion('principal')">Principal</button>
+    <button onclick="mostrarSeccion('graficos')">Gráficos</button>
+    <button onclick="mostrarSeccion('info')">Información</button>
+  </nav>
 
-    <div class="menu">
-      <button onclick="mostrarSeccion('principal')">Principal</button>
-      <button onclick="mostrarSeccion('graficos')">Gráficos</button>
-      <button onclick="mostrarSeccion('info')">Información</button>
-    </div>
+  <div id="principal" class="seccion activa">
+    <div class="dato" id="temp">🌡 Temperatura: ...</div>
+    <div class="dato" id="hum">💧 Humedad: ...</div>
+    <div class="dato" id="pres">📉 Presión: ...</div>
+    <div class="dato" id="roc">🌫 Punto de rocío: ...</div>
+    <div class="dato" id="sens">🌬️ Sensación térmica: ...</div>
+    <div class="dato" id="estado">Estado: ...</div>
+    <div class="dato" id="hora">🕒 Última actualización: ...</div>
+    <div class="dato" id="resumen">📊 Resumen diario: ...</div>
+    <a href="https://t.me/miniclima_arana_bot" class="bot">🤖 Bot de Telegram</a>
+  </div>
 
-    <div id="principal" class="seccion activa">
-      <div class="dato" id="estado">Estado: 🌤 - ...</div>
-      <div class="dato" id="temp">🌡 Temperatura: ...</div>
-      <div class="dato" id="hum">💧 Humedad: ...</div>
-      <div class="dato" id="pres">📉 Presión: ...</div>
-      <div class="dato" id="roc">🌫 Punto de rocío: ...</div>
-      <div class="dato" id="sens">🥵 Sensación térmica: ...</div>
-      <div class="dato" id="hora">🕒 Última actualización: ...</div>
-    </div>
+  <div id="graficos" class="seccion">
+    <iframe width="100%" height="300" style="border: none;" src="https://thingspeak.com/channels/3020883/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&type=line"></iframe>
+    <iframe width="100%" height="300" style="border: none;" src="https://thingspeak.com/channels/3020883/charts/2?bgcolor=%23ffffff&color=%2300aaff&dynamic=true&type=line"></iframe>
+  </div>
 
-    <div id="graficos" class="seccion">
-      <h2>📈 Gráficos históricos</h2>
-      <iframe src="https://thingspeak.com/channels/3020883/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
-      <iframe src="https://thingspeak.com/channels/3020883/charts/2?bgcolor=%23ffffff&color=%2300977b&dynamic=true&results=60&type=line&update=15"></iframe>
-      <iframe src="https://thingspeak.com/channels/3020883/charts/3?bgcolor=%23ffffff&color=%232f64ad&dynamic=true&results=60&type=line&update=15"></iframe>
-      <iframe src="https://thingspeak.com/channels/3020883/charts/4?bgcolor=%23ffffff&color=%239b59b6&dynamic=true&results=60&type=line&update=15"></iframe>
-    </div>
-
-    <div id="info" class="seccion">
-      <h2>ℹ️ Información de la estación</h2>
-      <div class="dato">📍 Ubicación: Arana, La Plata, Buenos Aires, Argentina</div>
-      <div class="dato">🔧 Sensores instalados:
-        <ul>
-          <li>🌡 SHT31 (Temperatura y Humedad)</li>
-          <li>🧭 BMP180 (Presión atmosférica)</li>
-        </ul>
-      </div>
-      <div class="dato">👨‍💻 Autor: cfaundezok</div>
-      <div class="dato">🔄 Actualización: cada 10 minutos</div>
-      <div class="dato">📚 Proyecto: Personal, educativo y experimental</div>
-<div style="text-align:center; margin: 15px 0;">
-  <a href="https://t.me/miniclima_arana_bot" target="_blank" rel="noopener" 
-     style="text-decoration:none; color:#0088cc; font-weight:bold; font-size:1.2rem; display:inline-flex; align-items:center; gap:8px;">
-    <svg height="24" viewBox="0 0 240 240" width="24" xmlns="http://www.w3.org/2000/svg" fill="#0088cc">
-      <path d="M120 0C53.7 0 0 53.7 0 120s53.7 120 120 120 120-53.7 120-120S186.3 0 120 0zm57.8 84.3-23.7 111c-1.8 8-6.6 10-13.3 6.3l-36.8-27.2-17.7 17c-1.9 1.9-3.5 3.5-7.2 3.5l2.6-36.8 66.9-60.4c2.9-2.6-.6-4-4.5-1.4l-82.6 52.1-35.5-11c-7.7-2.4-7.8-7.7 1.6-11.4l137-52.8c6.3-2.4 11.8 1.5 9.8 11z"/>
-    </svg>
-    Chat con el Bot Telegram
-  </a>
-</div>
-    </div>
+  <div id="info" class="seccion">
+    <p>Estación meteorológica casera en Arana (La Plata).</p>
+    <p>Sensores: SHT31 (temp/humedad), BMP180 (presión).</p>
+    <p>Datos actualizados cada 10 minutos.</p>
   </div>
 
   <script>
     const channelID = "3020883";
-    const url = `https://api.thingspeak.com/channels/${channelID}/feeds/last.json`;
-
-    async function actualizarDatos() {
-      const res = await fetch(url);
-      const data = await res.json();
-
-      const T = parseFloat(data.field1);
-      const H = parseFloat(data.field2);
-      const P = parseFloat(data.field3);
-      const R = parseFloat(data.field4);
-
-      document.getElementById("temp").textContent = `🌡 Temperatura: ${T.toFixed(1)} °C`;
-      document.getElementById("hum").textContent  = `💧 Humedad: ${H.toFixed(1)} %`;
-      document.getElementById("pres").textContent = `📉 Presión: ${P.toFixed(1)} hPa`;
-      document.getElementById("roc").textContent  = `🌫 Punto de rocío: ${R.toFixed(1)} °C`;
-      document.getElementById("hora").textContent = `🕒 Última actualización: ${new Date(data.created_at).toLocaleString()}`;
-
-      // Sensación térmica simple (Wind Chill si < 27°C)
-      let sensacion;
-      const viento_kmh = 12; // valor externo estimado
-
-      if (T < 27) {
-        const v = Math.pow(viento_kmh, 0.16);
-        sensacion = 13.12 + 0.6215*T - 11.37*v + 0.3965*T*v;
-      } else {
-        sensacion = T; // si hace calor, igual a T (simplificado)
-      }
-      document.getElementById("sens").textContent = `🥵 Sensación térmica: ${sensacion.toFixed(1)} °C`;
-
-      // Estado aproximado (muy básico)
-      let estado = "🌤 Parcialmente despejado";
-      if (H > 90 && T < 20) estado = "🌧 Posible llovizna";
-      else if (H < 40 && T > 28) estado = "☀️ Soleado";
-      else if (H > 80 && T > 25) estado = "🌦 Calor húmedo";
-
-      document.getElementById("estado").textContent = `Estado: ${estado}`;
-    }
+    const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?results=48`;
 
     function mostrarSeccion(id) {
       document.querySelectorAll(".seccion").forEach(sec => sec.classList.remove("activa"));
       document.getElementById(id).classList.add("activa");
+    }
+
+    // Modo noche
+    if (localStorage.getItem("modoNoche") === "true") {
+      document.body.classList.add("noche");
+    }
+    document.querySelector(".toggle-noche").addEventListener("click", () => {
+      document.body.classList.toggle("noche");
+      localStorage.setItem("modoNoche", document.body.classList.contains("noche"));
+    });
+
+    async function actualizarDatos() {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const ultimo = data.feeds[data.feeds.length - 1];
+
+        const T = parseFloat(ultimo.field1);
+        const H = parseFloat(ultimo.field2);
+        const P = parseFloat(ultimo.field3);
+        const R = parseFloat(ultimo.field4);
+
+        document.getElementById("temp").textContent = `🌡 Temperatura: ${T.toFixed(1)} °C`;
+        document.getElementById("hum").textContent  = `💧 Humedad: ${H.toFixed(1)} %`;
+        document.getElementById("pres").textContent = `📉 Presión: ${P.toFixed(1)} hPa`;
+        document.getElementById("roc").textContent  = `🌫 Punto de rocío: ${R.toFixed(1)} °C`;
+        document.getElementById("hora").textContent = `🕒 Última actualización: ${new Date(ultimo.created_at).toLocaleString()}`;
+
+        // Sensación térmica
+        const viento_kmh = 12;
+        let sensacion;
+        if (T < 27) {
+          const v = Math.pow(viento_kmh, 0.16);
+          sensacion = 13.12 + 0.6215*T - 11.37*v + 0.3965*T*v;
+        } else {
+          sensacion = T;
+        }
+        document.getElementById("sens").textContent = `🌬️ Sensación térmica: ${sensacion.toFixed(1)} °C`;
+
+        // Estado simple
+        let estado = "🌤 Parcialmente despejado";
+        if (H > 90 && T < 20) estado = "🌧 Posible llovizna";
+        else if (H < 40 && T > 28) estado = "☀️ Soleado";
+        else if (H > 80 && T > 25) estado = "🌦 Calor húmedo";
+        document.getElementById("estado").textContent = `Estado: ${estado}`;
+
+        // Resumen diario
+        const temps = data.feeds.map(d => parseFloat(d.field1)).filter(v => !isNaN(v));
+        const hums = data.feeds.map(d => parseFloat(d.field2)).filter(v => !isNaN(v));
+        const promT = temps.reduce((a,b)=>a+b,0) / temps.length;
+        const promH = hums.reduce((a,b)=>a+b,0) / hums.length;
+        document.getElementById("resumen").textContent = `📊 Promedio Temp: ${promT.toFixed(1)} °C, 💧 Humedad: ${promH.toFixed(1)} %`;
+      } catch (e) {
+        document.getElementById("temp").textContent = "Error al cargar los datos.";
+        console.error("Error:", e);
+      }
     }
 
     actualizarDatos();
