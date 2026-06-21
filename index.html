@@ -18,7 +18,7 @@
       padding: 20px;
       border-radius: 15px;
       display: inline-block;
-      min-width: 250px;
+      min-width: 260px;
     }
 
     .value {
@@ -49,7 +49,7 @@
 
 <script>
 
-// 🔴 CAMBIAR ESTO POR TU IP
+// 🔴 CAMBIAR POR TU IP REAL
 const ESP32_URL = "http://192.168.68.64/data";
 
 async function update() {
@@ -63,10 +63,11 @@ async function update() {
     const stateEl = document.getElementById("state");
     stateEl.innerText = data.state;
 
-    // colores simples
-    stateEl.className = "value " +
-      (data.state === "ESTABLE" ? "ok" :
-       data.state === "INESTABLE" ? "warn" : "bad");
+    // colores estado
+    stateEl.className =
+      data.state === "ESTABLE" ? "value ok" :
+      data.state === "INESTABLE" ? "value warn" :
+      "value bad";
 
   } catch (e) {
     console.log("Error:", e);
