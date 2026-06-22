@@ -1,83 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Clima en Arana</title>
-
-  <style>
-    body {
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
-      text-align: center;
-      padding: 30px;
-    }
-
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 15px;
-      display: inline-block;
-      min-width: 260px;
-    }
-
-    .value {
-      font-size: 28px;
-      margin: 10px 0;
-    }
-
-    .ok { color: #22c55e; }
-    .warn { color: #facc15; }
-    .bad { color: #ef4444; }
-  </style>
+<meta charset="UTF-8">
+<title>Estación Casa</title>
+<style>
+  body { font-family: sans-serif; background:#111; color:#eee; text-align:center; padding-top:50px; }
+  .dato { font-size: 2em; margin: 20px; }
+</style>
 </head>
-
 <body>
-
-<h1>🌦️ Clima en Tiempo Real</h1>
-
-<div class="card">
-  <div>Temperatura</div>
-  <div class="value" id="temp">--</div>
-
-  <div>Presión</div>
-  <div class="value" id="pressure">--</div>
-
-  <div>Estado</div>
-  <div class="value" id="state">--</div>
-</div>
+  <h1>🏠 Estación Meteorológica</h1>
+  <div class="dato">🌡 Temp: <span id="temp">--</span> °C</div>
+  <div class="dato">📈 Presión: <span id="presion">--</span> hPa</div>
+  <div class="dato">⛰ Altitud: <span id="altitud">--</span> m</div>
+  <p id="fecha"></p>
 
 <script>
+const URL = "https://script.google.com/macros/s/TU_ID_DE_DEPLOY/exec";
 
-// 🔴 CAMBIAR POR TU IP REAL
-const ESP32_URL = "http://192.168.68.64/data";
-
-async function update() {
-  try {
-    const res = await fetch(ESP32_URL);
-    const data = await res.json();
-
-    document.getElementById("temp").innerText = data.temp + " °C";
-    document.getElementById("pressure").innerText = data.pressure + " hPa";
-
-    const stateEl = document.getElementById("state");
-    stateEl.innerText = data.state;
-
-    // colores estado
-    stateEl.className =
-      data.state === "ESTABLE" ? "value ok" :
-      data.state === "INESTABLE" ? "value warn" :
-      "value bad";
-
-  } catch (e) {
-    console.log("Error:", e);
-  }
-}
-
-setInterval(update, 5000);
-update();
-
+fetch(URL)
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("temp").innerText = data.temperatura;
+    document.getElementById("presion").innerText = data.presion;
+    document.getElementById("altitud").innerText = data.altitud;
+    document.getElementById("fecha").innerText = "Última actualización: " + data.fecha;
+  });
 </script>
-
 </body>
 </html>
