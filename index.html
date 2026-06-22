@@ -615,7 +615,9 @@ function actualizar() {
     .then(r => r.json())
     .then(d => {
       const t = Number(d.temperatura);
-      const p = Number(d.presion);
+      // Google Sheets a veces interpreta la presión como fecha y devuelve "1019-07-01T..."
+      // Extraemos solo la parte numérica inicial
+      const p = parseFloat(String(d.presion).replace(/[^0-9.]/g, '').slice(0, 7)) || 0;
 
       document.getElementById("temp").innerText    = t;
       document.getElementById("presion").innerText = p;
@@ -668,8 +670,33 @@ function actualizar() {
     });
 }
 
+/* — HISTORIAL DESDE SHEETS — */
+function cargarHistorial() {
+  fetch(API + "?modo=historial")
+    .then(r => r.json())
+    .then(filas => {
+      if (!filas || filas.length === 0) return;
+      hist.h    = filas.map(f => f.hora);
+      hist.temp = filas.map(f => Number(f.temperatura));
+      hist.pres = filas.map(f => parseFloat(String(f.presion).replace(/[^0-9.]/g, '').slice(0, 7)) || 0);
+
+      hist.temp.forEach(t => {
+        if (tempMin === null || t < tempMin) tempMin = t;
+        if (tempMax === null || t > tempMax) tempMax = t;
+      });
+      document.getElementById("temp-min").innerText = tempMin;
+      document.getElementById("temp-max").innerText = tempMax;
+
+      grafico();
+    })
+    .catch(() => console.log("No se pudo cargar el historial"));
+}
+
 actualizar();
 setInterval(actualizar, 30000);
+
+cargarHistorial();
+setInterval(cargarHistorial, 5 * 60 * 1000);
 </script>
 </body>
 </html>
