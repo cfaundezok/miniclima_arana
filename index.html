@@ -2,29 +2,232 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Estación Casa</title>
+
 <style>
-  body { font-family: sans-serif; background:#111; color:#eee; text-align:center; padding-top:50px; }
-  .dato { font-size: 2em; margin: 20px; }
+  :root {
+    --bg: #0f172a;
+    --card: rgba(255,255,255,0.06);
+    --text: #e5e7eb;
+    --muted: rgba(255,255,255,0.6);
+    --accent: #38bdf8;
+  }
+
+  body.light {
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #4b5563;
+    --accent: #2563eb;
+  }
+
+  body {
+    margin: 0;
+    font-family: system-ui, Arial;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    transition: 0.3s;
+  }
+
+  header {
+    padding: 25px;
+    text-align: center;
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  .status {
+    font-size: 0.9rem;
+    margin-top: 5px;
+    color: var(--muted);
+  }
+
+  .online { color: #22c55e; }
+  .offline { color: #ef4444; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    width: 90%;
+    max-width: 600px;
+    margin-top: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    padding: 18px;
+    border-radius: 14px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+  }
+
+  .value {
+    font-size: 2rem;
+    margin-top: 8px;
+    font-weight: bold;
+  }
+
+  .label {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .weather {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: var(--accent);
+  }
+
+  footer {
+    margin-top: auto;
+    padding: 15px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+  }
+
+  button {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--card);
+    color: var(--text);
+  }
 </style>
 </head>
+
 <body>
+
+<header>
   <h1>🏠 Estación Meteorológica</h1>
-  <div class="dato">🌡 Temp: <span id="temp">--</span> °C</div>
-  <div class="dato">📈 Presión: <span id="presion">--</span> hPa</div>
-  <p id="fecha"></p>
+  <div class="status" id="status">🟡 Conectando...</div>
+
+  <div class="buttons">
+    <button onclick="cargarDatos()">🔄 Actualizar</button>
+    <button onclick="toggleTheme()">🌙/☀️</button>
+  </div>
+</header>
+
+<div class="grid">
+  <div class="card">
+    <div class="label">🌡 Temperatura</div>
+    <div class="value"><span id="temp">--</span> °C</div>
+  </div>
+
+  <div class="card">
+    <div class="label">📈 Presión</div>
+    <div class="value"><span id="presion">--</span> hPa</div>
+  </div>
+
+  <div class="card">
+    <div class="label">🌤 Clima</div>
+    <div class="weather" id="clima">--</div>
+  </div>
+</div>
+
+<footer>
+  ⏱ Última actualización: <span id="fecha">--</span>
+</footer>
 
 <script>
 const URL = "https://script.google.com/macros/s/AKfycby26DBC7O7CecYlb9Ka_Ks8ywn65pVaUlzW4yb90iVrpmoDfofQuWzVQ0PZEg9EdMCpyQ/exec";
 
-fetch(URL)
-  .then(r => r.json())
-  .then(data => {
-    document.getElementById("temp").innerText = data.temperatura;
-    document.getElementById("presion").innerText = data.presion;
-    document.getElementById("altitud").innerText = data.altitud;
-    document.getElementById("fecha").innerText = "Última actualización: " + data.fecha;
+let historial = [];
+
+function formatearFecha(fechaStr) {
+  const f = new Date(fechaStr);
+  if (isNaN(f)) return fechaStr;
+  return f.toLocaleString("es-AR", {
+    dateStyle: "medium",
+    timeStyle: "short"
   });
+}
+
+// 🌤 lógica simple de clima
+function calcularClima(temp, presion) {
+  if (presion < 1005) return "🌧 Lluvia probable";
+  if (temp > 30) return "🔥 Muy caluroso";
+  if (temp > 22) return "☀️ Despejado";
+  if (temp > 15) return "🌤 Agradable";
+  return "❄️ Frío";
+}
+
+function setStatus(ok) {
+  const s = document.getElementById("status");
+  s.textContent = ok ? "🟢 Conectado" : "🔴 Sin conexión";
+  s.className = ok ? "online" : "offline";
+}
+
+function guardarHistorial(temp) {
+  historial.push(temp);
+  if (historial.length > 10) historial.shift();
+}
+
+function cargarDatos() {
+  fetch(URL)
+    .then(r => r.json())
+    .then(data => {
+      setStatus(true);
+
+      const temp = Number(data.temperatura);
+      const presion = Number(data.presion);
+
+      document.getElementById("temp").innerText = temp ?? "--";
+      document.getElementById("presion").innerText = presion ?? "--";
+
+      document.getElementById("clima").innerText =
+        calcularClima(temp, presion);
+
+      document.getElementById("fecha").innerText =
+        formatearFecha(data.fecha);
+
+      guardarHistorial(temp);
+
+      // mini gráfico visual simple
+      console.log("Historial temp:", historial);
+    })
+    .catch(err => {
+      console.error(err);
+      setStatus(false);
+    });
+}
+
+// 🔄 auto refresh cada 30s
+setInterval(cargarDatos, 30000);
+cargarDatos();
+
+// 🌙 tema
+function toggleTheme() {
+  document.body.classList.toggle("light");
+}
+
+// 💾 recordar tema
+if (localStorage.getItem("theme") === "light") {
+  document.body.classList.add("light");
+}
+
+setInterval(() => {
+  localStorage.setItem(
+    "theme",
+    document.body.classList.contains("light") ? "light" : "dark"
+  );
+}, 2000);
+
 </script>
+
 </body>
 </html>
